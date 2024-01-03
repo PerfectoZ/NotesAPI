@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from models.Note import NoteCreate, NoteDB, NoteUpdate
 from services.NoteService import NoteService
 from pymongo import MongoClient

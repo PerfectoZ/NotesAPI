@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from pydantic import (
     BaseModel,
-    field_validator
+    validator
 )
 from typing import Optional
 
@@ -9,14 +9,14 @@ class NoteCreate(BaseModel):
     title: Optional[str] = None
     body: Optional[str] = None
 
-    @field_validator("title", mode='before')
+    @validator("title")
     @classmethod
     def non_empty_title(cls, value: str):
         if not value or value.isspace():
             raise HTTPException(status_code=400, detail="Title cannot be null or blank")
         return value
 
-    @field_validator("body", mode='before')
+    @validator("body")
     @classmethod
     def non_empty_body(cls, value: str):
         if not value or value.isspace():
