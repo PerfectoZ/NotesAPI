@@ -4,6 +4,7 @@ from pymongo.errors import DuplicateKeyError
 from models.User import UserCreate, UserLogin
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
+import bcrypt
 
 class UserService:
     def __init__(self, mongo_client: MongoClient):
@@ -17,6 +18,9 @@ class UserService:
 
     def create_user_service(self, body: UserCreate):
         body = body.model_dump()
+        hashed_password = bcrypt.hashpw(body["password"].encode("utf-8"), bcrypt.gensalt())
+        body["password"] = hashed_password.decode("utf-8")
+
         try :
             result = self.collection.insert_one(body)
 
@@ -49,9 +53,11 @@ class UserService:
         if not result:
             raise HTTPException(status_code=400, detail="Invalid Username")
 
-        if result["password"]!=body["password"]:
+        stored_password = result["password"].encode("utf-8")
+
+        if not bcrypt.checkpw(body["password"].encode("utf-8"), stored_password):
             raise HTTPException(status_code=400, detail="Invalid Password")
 
         token_data = {"username": body["username"]}
         token = self.create_jwt_token(token_data)
-        return {"access_token": token, "token_type": "bearer"}
+        return {"access_token": token}
