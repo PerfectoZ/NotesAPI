@@ -29,3 +29,6 @@ class NoteUpdate(NoteCreate):
 class NoteDB(NoteCreate):
     id: int
     created_by: str
+
+class NoteShare(BaseModel):
+    toUser: str

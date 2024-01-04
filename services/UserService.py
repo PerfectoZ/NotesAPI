@@ -61,3 +61,9 @@ class UserService:
         token_data = {"username": body["username"]}
         token = self.create_jwt_token(token_data)
         return {"access_token": token}
+
+    def get_user_by_username(self, username):
+        result = self.collection.find_one({"username": username})
+        if not result :
+            raise HTTPException(status_code=404, detail="No User found")
+        return True

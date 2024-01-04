@@ -8,6 +8,7 @@ class NoteService:
         self.db = self.client["NotesApp"]
         self.collection = self.db["notes"]
         self.sequence = self.db["counters"]
+        self.sharing = self.db["shared_notes"]
 
     def get_note_id(self, sequence_name):
         result = self.sequence.find_one_and_update(
@@ -53,3 +54,12 @@ class NoteService:
             raise HTTPException(detail="Cannot delete other's Note", status_code=403)
         self.collection.delete_one({"_id": id})
         return {"message": "Deleted Successfully"}
+
+    def share_note_service(self, id, body, user):
+        self.get_note_service(id, user)
+        body = body.model_dump()
+        body["fromUser"] = user["username"]
+        body["noteId"] = id
+        self.sharing.insert_one(body)
+        body["_id"] = str(body["_id"])
+        return body
