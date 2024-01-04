@@ -28,3 +28,4 @@ class NoteUpdate(NoteCreate):
 
 class NoteDB(NoteCreate):
     id: int
+    created_by: str

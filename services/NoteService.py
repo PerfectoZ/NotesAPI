@@ -18,24 +18,27 @@ class NoteService:
         )
         return result["sequence_value"]
 
-    def create_note_service(self, body: NoteCreate):
+    def create_note_service(self, body:NoteCreate, user):
         body = body.model_dump()
+        body["created_by"] = user["username"]
         body["_id"] = self.get_note_id("note_id_sequence")
         result = self.collection.insert_one(body)
         inserted_id = result.inserted_id
         return {"id": inserted_id, **body}
 
-    def get_note_service(self, id):
+    def get_note_service(self, id, user):
         document = self.collection.find_one({"_id": id})
         if document is None:
             raise HTTPException(status_code=404, detail=f'No Note Found with id: {id}')
+        if document["created_by"]!=user["username"]:
+            raise HTTPException(status_code=403, detail="Cannot view someone else's Note")
         return document
 
-    def get_all_notes_service(self):
-        return list(self.collection.find())
+    def get_all_notes_service(self, username):
+        return list(self.collection.find({"created_by": username}))
 
-    def update_note_service(self, id, body:NoteUpdate):
-        document = self.get_note_service(id)
+    def update_note_service(self, id, body:NoteUpdate, user):
+        document = self.get_note_service(id, user)
         body = body.model_dump()
         for k in body.keys():
             if body[k]:
@@ -44,6 +47,9 @@ class NoteService:
         document.pop("_id")
         return document
 
-    def delete_note_service(self, id):
+    def delete_note_service(self, id, user):
+        document = self.get_note_service(id, user)
+        if document["created_by"]!=user["username"]:
+            raise HTTPException(detail="Cannot delete other's Note", status_code=403)
         self.collection.delete_one({"_id": id})
         return {"message": "Deleted Successfully"}

@@ -15,5 +15,5 @@ async def login_user(body: UserLogin):
     return userService.login_user_service(body)
 
 @router.get("/users/details")
-async def user_details(user_details: dict = Depends(userService.get_current_user)):
-    return user_details
+async def user_details(user: dict = Depends(userService.get_current_user)):
+    return user
