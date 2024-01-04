@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, TEXT
 from fastapi import HTTPException
 from models.Note import NoteCreate, NoteUpdate
 
@@ -9,6 +9,10 @@ class NoteService:
         self.collection = self.db["notes"]
         self.sequence = self.db["counters"]
         self.sharing = self.db["shared_notes"]
+        try:
+            self.collection.create_index([("title", TEXT), ("body", TEXT)])
+        except:
+            pass
 
     def get_note_id(self, sequence_name):
         result = self.sequence.find_one_and_update(
@@ -63,3 +67,13 @@ class NoteService:
         self.sharing.insert_one(body)
         body["_id"] = str(body["_id"])
         return body
+
+    def search_keywords_service(self, query):
+        return list(self.collection.find(
+            {
+                "$text": {
+                    "$search": query
+                }
+            },
+            {"score": {"$meta": "textScore"}}
+        ).sort([("score", {"$meta": "textScore"})]))

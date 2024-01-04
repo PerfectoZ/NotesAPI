@@ -32,3 +32,7 @@ async def delete_note(id: int, user = Depends(userService.get_current_user)):
 async def share_note(id: int, body: NoteShare, user = Depends(userService.get_current_user)):
     userService.get_user_by_username(body.model_dump()["toUser"])
     return noteService.share_note_service(id, body, user)
+
+@router.get("/search", status_code=200)
+async def search_keywords(query: str = "Python"):
+    return noteService.search_keywords_service(query)
