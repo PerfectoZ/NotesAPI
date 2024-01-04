@@ -14,6 +14,9 @@ FastAPI was selected due to its asynchronous support, automatic data validation 
 ## Choice of Database
 MongoDB
 
+## Searching Text
+For searching keywords I created a $text index on both body and tirle
+
 ## How to Run the App
 Run the following command in the terminal:
 ```bash
