@@ -10,12 +10,12 @@ import bcrypt
 
 class UserService:
     def __init__(self, mongo_client: MongoClient):
-        self.SECRET_KEY = str(os.getenv("TOKEN_SECRET_KEY"))
-        self.ALGORITHM = str(os.getenv("TOKEN_GEN_ALGORITHM"))
-        self.ACCESS_TOKEN_EXPIRE_MINUTES = str(os.getenv("TOKEN_EXPIRY_DURATION_MINUTES"))
+        self.SECRET_KEY = "9c90c2565ea309b1c238b37d037b54e7"
+        self.ALGORITHM = "HS256"
+        self.ACCESS_TOKEN_EXPIRE_MINUTES = 30
         self.client = mongo_client
-        self.db = self.client[str(os.getenv("DB_NAME"))]
-        self.collection = self.db[str(os.getenv("DB_COLLECTION"))]
+        self.db = self.client["NotesApp"]
+        self.collection = self.db["users"]
         self.collection.create_index([("username", 1), ("email", 1)], unique=True)
 
     def create_user_service(self, body: UserCreate):
