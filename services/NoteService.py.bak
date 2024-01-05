@@ -1,3 +1,5 @@
+import os
+
 from pymongo import MongoClient, TEXT
 from fastapi import HTTPException
 from models.Note import NoteCreate, NoteUpdate
@@ -5,14 +7,12 @@ from models.Note import NoteCreate, NoteUpdate
 class NoteService:
     def __init__(self, mongo_client: MongoClient):
         self.client = mongo_client
-        self.db = self.client["NotesApp"]
-        self.collection = self.db["notes"]
-        self.sequence = self.db["counters"]
-        self.sharing = self.db["shared_notes"]
-        try:
-            self.collection.create_index([("title", TEXT), ("body", TEXT)])
-        except:
-            pass
+        self.db = self.client[str(os.getenv("DB_NAME"))]
+        self.collection = self.db[str(os.getenv("DB_COLLECTION"))]
+        self.sequence = self.db[str(os.getenv("DB_SEQUENCE"))]
+        self.sharing = self.db[str(os.getenv("DB_SHARING"))]
+        try: self.collection.create_index([("title", TEXT), ("body", TEXT)])
+        except: pass
 
     def get_note_id(self, sequence_name):
         result = self.sequence.find_one_and_update(
