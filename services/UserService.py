@@ -1,3 +1,5 @@
+import os
+
 from pymongo import MongoClient
 from fastapi import HTTPException, Depends
 from pymongo.errors import DuplicateKeyError
@@ -8,12 +10,12 @@ import bcrypt
 
 class UserService:
     def __init__(self, mongo_client: MongoClient):
-        self.SECRET_KEY = "secret"
-        self.ALGORITHM = "HS256"
-        self.ACCESS_TOKEN_EXPIRE_MINUTES = 30
+        self.SECRET_KEY = os.getenv("TOKEN_SECRET_KEY")
+        self.ALGORITHM = os.getenv("TOKEN_GEN_ALGORITHM")
+        self.ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("TOKEN_EXPIRY_DURATION_MINUTES")
         self.client = mongo_client
-        self.db = self.client["NotesApp"]
-        self.collection = self.db["users"]
+        self.db = self.client[os.getenv("DB_NAME")]
+        self.collection = self.db[os.getenv("DB_COLLECTION")]
         self.collection.create_index([("username", 1), ("email", 1)], unique=True)
 
     def create_user_service(self, body: UserCreate):
