@@ -25,4 +25,4 @@ starlette==0.32.0.post1
 typing-extensions==4.9.0
 uvicorn==0.25.0
 wheel==0.42.0
-jose
+python-jose

@@ -7,4 +7,4 @@ RUN apt-get install libsodium-dev -y
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8080
-CMD ["python", "main.py"]
+CMD ["make", "server"]
