@@ -3,9 +3,10 @@ from models.User import UserCreate, UserLogin
 from services.UserService import UserService
 from pymongo import MongoClient
 from fastapi.security import OAuth2PasswordBearer
+import os
 
 router = APIRouter()
-userService = UserService(MongoClient("mongodb://mong:27017/"))
+userService = UserService(MongoClient(os.environ['DB_URL']))
 
 @router.post("/users", status_code=201)
 async def create_note(body: UserCreate):

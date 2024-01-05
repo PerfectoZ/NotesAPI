@@ -4,11 +4,11 @@ from services.NoteService import NoteService
 from services.UserService import UserService
 from pymongo import MongoClient
 from fastapi.security import OAuth2PasswordBearer
-
+import os
 
 router = APIRouter()
-noteService = NoteService(MongoClient("mongodb://mong:27017/"))
-userService = UserService(MongoClient("mongodb://mong:27017/"))
+noteService = NoteService(MongoClient(os.environ['DB_URL']))
+userService = UserService(MongoClient(os.environ['DB_URL']))
 
 @router.post("/notes", response_model=NoteDB, status_code=201)
 async def create_note(body: NoteCreate, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):

@@ -7,16 +7,17 @@ import bcrypt
 import paseto
 from paseto.keys.symmetric_key import SymmetricKey
 from paseto.protocols.v4 import ProtocolVersion4
+import os
 
 SECRET_KEY = SymmetricKey.generate(protocol=ProtocolVersion4)
 
 class UserService:
     def __init__(self, mongo_client: MongoClient):
         self.SECRET_KEY = SECRET_KEY
-        self.ACCESS_TOKEN_EXPIRE_MINUTES = 30
+        self.ACCESS_TOKEN_EXPIRE_MINUTES = os.environ['TOKEN_EXPIRY_DURATION_MINUTES']
         self.client = mongo_client
-        self.db = self.client["NotesApp"]
-        self.collection = self.db["users"]
+        self.db = self.client[os.environ['DB_NAME']]
+        self.collection = self.db[os.environ['DB_USERS']]
         self.collection.create_index([("username", 1), ("email", 1)], unique=True)
 
     def create_user_service(self, body: UserCreate):

@@ -7,10 +7,10 @@ from models.Note import NoteCreate, NoteUpdate
 class NoteService:
     def __init__(self, mongo_client: MongoClient):
         self.client = mongo_client
-        self.db = self.client["NotesApp"]
-        self.collection = self.db["notes"]
-        self.sequence = self.db["counters"]
-        self.sharing = self.db["shared_notes"]
+        self.db = self.client[os.environ['DB_NAME']]
+        self.collection = self.db[os.environ['DB_COLLECTION']]
+        self.sequence = self.db[os.environ['DB_SEQUENCE']]
+        self.sharing = self.db[os.environ['DB_SHARING']]
         try: self.collection.create_index([("title", TEXT), ("body", TEXT)])
         except: pass
 
