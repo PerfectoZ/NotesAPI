@@ -25,6 +25,7 @@ class NoteService:
 
     def create_note_service(self, body:NoteCreate, user):
         body = body.model_dump()
+        print(user)
         body["created_by"] = user["username"]
         body["_id"] = self.get_note_id("note_id_sequence")
         result = self.collection.insert_one(body)

@@ -1,17 +1,18 @@
-import os
-
 from pymongo import MongoClient
 from fastapi import HTTPException, Depends
 from pymongo.errors import DuplicateKeyError
 from models.User import UserCreate, UserLogin
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
 import bcrypt
+import paseto
+from paseto.keys.symmetric_key import SymmetricKey
+from paseto.protocols.v4 import ProtocolVersion4
+
+SECRET_KEY = SymmetricKey.generate(protocol=ProtocolVersion4)
 
 class UserService:
     def __init__(self, mongo_client: MongoClient):
-        self.SECRET_KEY = "9c90c2565ea309b1c238b37d037b54e7"
-        self.ALGORITHM = "HS256"
+        self.SECRET_KEY = SECRET_KEY
         self.ACCESS_TOKEN_EXPIRE_MINUTES = 30
         self.client = mongo_client
         self.db = self.client["NotesApp"]
@@ -33,21 +34,29 @@ class UserService:
         body.pop('password')
         return {**body}
 
-    def create_jwt_token(self, body):
-        return jwt.encode(body, key=self.SECRET_KEY, algorithm=self.ALGORITHM)
+    def create_paseto_token(self, body):
+        token = paseto.create(key=self.SECRET_KEY,
+                              purpose='local',
+                              claims={"username": body["username"]},
+                              exp_seconds=300)
+        return token
 
-    def decode_jwt_token(self, token: str):
+    def decode_paseto_token(self, token: str):
         try:
-            payload = jwt.decode(token, key=self.SECRET_KEY, algorithms=[self.ALGORITHM])
-            return payload
-        except JWTError:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
-
+            claims = paseto.parse(
+                key=self.SECRET_KEY,
+                purpose='local',
+                token=token,
+            )
+            return claims['message']
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+          
     def get_current_user(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
         credentials_exception = HTTPException(
             status_code=401, detail="Could not validate credentials"
         )
-        return self.decode_jwt_token(token)
+        return self.decode_paseto_token(token)
 
     def login_user_service(self, body):
         body = body.model_dump()
@@ -61,7 +70,7 @@ class UserService:
             raise HTTPException(status_code=400, detail="Invalid Password")
 
         token_data = {"username": body["username"]}
-        token = self.create_jwt_token(token_data)
+        token = self.create_paseto_token(token_data)
         return {"access_token": token}
 
     def get_user_by_username(self, username):

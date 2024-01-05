@@ -3,13 +3,17 @@ from models.Note import NoteCreate, NoteDB, NoteUpdate, NoteShare
 from services.NoteService import NoteService
 from services.UserService import UserService
 from pymongo import MongoClient
+from fastapi.requests import Request
+from fastapi.security import OAuth2PasswordBearer
+
 
 router = APIRouter()
-noteService = NoteService(MongoClient("mongodb://localhost:27017/"))
-userService = UserService(MongoClient("mongodb://localhost:27017/"))
+noteService = NoteService(MongoClient("mongodb://mong:27017/"))
+userService = UserService(MongoClient("mongodb://mong:27017/"))
 
 @router.post("/notes", response_model=NoteDB, status_code=201)
-async def create_note(body: NoteCreate, user = Depends(userService.get_current_user)):
+async def create_note(body: NoteCreate, token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
+    user = userService.decode_paseto_token(token)
     return noteService.create_note_service(body, user)
 
 @router.get("/notes/{id}", response_model=NoteCreate, status_code=200)

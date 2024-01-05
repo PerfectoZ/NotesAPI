@@ -4,7 +4,7 @@ from services.UserService import UserService
 from pymongo import MongoClient
 
 router = APIRouter()
-userService = UserService(MongoClient("mongodb://localhost:27017/"))
+userService = UserService(MongoClient("mongodb://mong:27017/"))
 
 @router.post("/users", status_code=201)
 async def create_note(body: UserCreate):
