@@ -1,10 +1,12 @@
+import os
+
 from fastapi import APIRouter, Depends
 from models.User import UserCreate, UserLogin
 from services.UserService import UserService
 from pymongo import MongoClient
 
 router = APIRouter()
-userService = UserService(MongoClient("mongodb://localhost:27017/"))
+userService = UserService(MongoClient(os.environ['DB_URL']))
 
 @router.post("/users", status_code=201)
 async def create_note(body: UserCreate):
