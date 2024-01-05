@@ -22,12 +22,13 @@ Run the following command in the terminal:
 ```bash
 make server
 ```
+As an alternative you can also execute run.sh in a docker container and make requests from Postman
 
 ## Unit Tests
 Unit tests were initially implemented using mock function calls. However, they became too lengthy, leading to a shift in focus towards authentication. 
 
 ## Authentication
-Authentication is implemented using PASETO (A much better alternative to JWT), One of it's requirements libsodium does not run properly on mac so deployed it on Docker Container
+Authentication is implemented using both JWT and PASETO (A much better alternative to JWT), One of it's requirements libsodium which does not run properly on mac so deployed it on Docker Container (Linux Os, Python Image)
 
 ## Docker
 The application successfully runs on Docker using an Ubuntu image.
