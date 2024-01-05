@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from models.User import UserCreate, UserLogin
 from services.UserService import UserService
 from pymongo import MongoClient
+from fastapi.security import OAuth2PasswordBearer
 
 router = APIRouter()
 userService = UserService(MongoClient("mongodb://mong:27017/"))
@@ -15,5 +16,6 @@ async def login_user(body: UserLogin):
     return userService.login_user_service(body)
 
 @router.get("/users/details")
-async def user_details(user: dict = Depends(userService.get_current_user)):
+async def user_details(token: str = Depends(OAuth2PasswordBearer(tokenUrl="token"))):
+    user = userService.decode_paseto_token(token)
     return user
