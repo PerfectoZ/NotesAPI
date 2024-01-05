@@ -4,7 +4,7 @@ from controllers.UserController import router as UserRouter
 import uvicorn
 from dotenv import load_dotenv
 
-load_dotenv("app.env")
+load_dotenv()
 
 app = FastAPI()
 app.include_router(NoteRouter, prefix="/api/v1")
