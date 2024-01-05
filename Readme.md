@@ -15,7 +15,7 @@ FastAPI was selected due to its asynchronous support, automatic data validation 
 MongoDB
 
 ## Searching Text
-For searching keywords I created a $text index on both body and tirle
+For searching keywords I created a $text index on both body and title
 
 ## How to Run the App
 Run the following command in the terminal:
@@ -27,10 +27,10 @@ make server
 Unit tests were initially implemented using mock function calls. However, they became too lengthy, leading to a shift in focus towards authentication. 
 
 ## Authentication
-Authentication is implemented using JWT (JSON Web Tokens). An attempt was made to use PASETO, but it encountered platform issues.
+Authentication is implemented using PASETO (A much better alternative to JWT), One of it's requirements libsodium does not run properly on mac so deployed it on Docker Container
 
 ## Docker
-The application successfully runs on Docker using an Ubuntu image. For the paseto part I ran it successfully on a linux image
+The application successfully runs on Docker using an Ubuntu image.
 
 ## Architecture
 The project adheres to the standard MVC (Model-View-Controller) architecture, ensuring clean and tidy code organization.
