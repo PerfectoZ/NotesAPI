@@ -35,3 +35,6 @@ The application successfully runs on Docker using an Ubuntu image.
 
 ## Architecture
 The project adheres to the standard MVC (Model-View-Controller) architecture, ensuring clean and tidy code organization.
+
+## Rate Limiter
+Rate Limiter uses in memory database and can be added as a dependency to required endpoints
